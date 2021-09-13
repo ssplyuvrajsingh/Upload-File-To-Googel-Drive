@@ -111,7 +111,7 @@ namespace Upload_File_To_Googel_Drive.DIServices
 
             var fileList = service.Files.List();
             fileList.Q = $"mimeType!='application/vnd.google-apps.folder' and '{DriveFolderId}' in parents";
-            fileList.Fields = "nextPageToken, files(id, name, size, mimeType)";
+            fileList.Fields = "nextPageToken, files(id, name, size, mimeType, version, createdTime)";
 
             var result = new List<Google.Apis.Drive.v3.Data.File>();
             string pageToken = null;
@@ -120,6 +120,7 @@ namespace Upload_File_To_Googel_Drive.DIServices
                 fileList.PageToken = pageToken;
                 var filesResult = fileList.Execute();
                 var files = filesResult.Files;
+                
                 pageToken = filesResult.NextPageToken;
                 result.AddRange(files);
             } while (pageToken != null);

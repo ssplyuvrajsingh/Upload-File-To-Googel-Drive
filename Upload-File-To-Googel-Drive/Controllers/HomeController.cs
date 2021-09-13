@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Web;
 using System.Web.Mvc;
 using Upload_File_To_Googel_Drive.DIServices;
@@ -25,10 +26,19 @@ namespace Upload_File_To_Googel_Drive.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeleteFile(string fileId)
+        public ActionResult DeleteFile(string fileId, DateTime createdDate)
         {
-            _googleDrive.DeleteFile(fileId);
-            return RedirectToAction("Index");
+            var days = Convert.ToInt32((DateTime.Now - createdDate).TotalDays);
+            if (days > 10)
+            {
+                _googleDrive.DeleteFile(fileId);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ViewBag.UnSuccess = "After 10 ten days you can delete this file.";
+                return View("~/Views/Home/Index.cshtml", _googleDrive.GetFiles());
+            }
         }
 
         public void DownloadFile(string id)
