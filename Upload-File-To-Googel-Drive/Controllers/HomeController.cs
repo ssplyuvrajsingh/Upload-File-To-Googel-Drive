@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.IO;
+using System.Web;
 using System.Web.Mvc;
 using Upload_File_To_Googel_Drive.DIServices;
 
@@ -13,20 +14,33 @@ namespace Upload_File_To_Googel_Drive.Controllers
         }
         public ActionResult Index()
         {
-            return View();
+            return View(_googleDrive.GetFiles());
         }
 
         [HttpPost]
         public ActionResult Index(HttpPostedFileBase file)
         {
             ViewBag.Success =  _googleDrive.UplaodFileOnDrive(file) == true ? "File Uploaded on Google Drive" : "Something went wrong please try again!";
-            return View();
+            return View(_googleDrive.GetFiles());
         }
 
-        [Route("authorize")]
-        public ActionResult Authorize()
+        [HttpPost]
+        public ActionResult DeleteFile(string fileId)
         {
-            return Json("Hurray!",JsonRequestBehavior.AllowGet);
+            _googleDrive.DeleteFile(fileId);
+            return RedirectToAction("Index");
+        }
+
+        public void DownloadFile(string id)
+        {
+            string FilePath = _googleDrive.DownloadGoogleFile(id);
+
+
+            Response.ContentType = "application/zip";
+            Response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(FilePath));
+            Response.WriteFile(System.Web.HttpContext.Current.Server.MapPath("~/GoogleDriveFiles/" + Path.GetFileName(FilePath)));
+            Response.End();
+            Response.Flush();
         }
     }
 }
