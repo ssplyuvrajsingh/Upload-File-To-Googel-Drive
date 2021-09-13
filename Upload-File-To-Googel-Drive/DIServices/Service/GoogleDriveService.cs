@@ -59,6 +59,8 @@ namespace Upload_File_To_Googel_Drive.DIServices
             {
                 //create service
                 DriveService service = GetService();
+
+                CreateFolder();
                 string path = Path.Combine(HttpContext.Current.Server.MapPath("~/GoogleDriveFiles"),
                 Path.GetFileName(file.FileName));
                 file.SaveAs(path);
@@ -78,6 +80,18 @@ namespace Upload_File_To_Googel_Drive.DIServices
             else
             {
                 return false;
+            }
+        }
+
+        //Create folder if not exists
+        public void CreateFolder()
+        {
+            string folderPath = "~/GoogleDriveFiles"; // Your code goes here
+            bool exists = Directory.Exists(HttpContext.Current.Server.MapPath(folderPath));
+
+            if (!exists)
+            {
+                Directory.CreateDirectory(HttpContext.Current.Server.MapPath(folderPath));
             }
         }
 
